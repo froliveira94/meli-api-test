@@ -12,6 +12,7 @@ class ProductController {
         return item.name;
       });
     }
+
     return categories;
   }
   getItems(data) {
@@ -26,7 +27,8 @@ class ProductController {
         },
         picture: item.thumbnail,
         condition: item.condition,
-        free_shipping: item.shipping.free_shipping
+        free_shipping: item.shipping.free_shipping,
+        state_name: item.address.state_name
       };
     });
     return items;
@@ -37,16 +39,17 @@ class ProductController {
         name: "",
         lastname: ""
       },
-      categories: this.getCategories(data),
-      items: this.getItems(data.results)
+      categories: !!data ? this.getCategories(data) : [],
+      items: !!data ? this.getItems(data.results) : []
     };
     return newData;
   }
-  getPicture(pictures, maxSize) {
-    return pictures.filter(item => item.max_size == `${maxSize}x${maxSize}`)[0]
-      .url;
+  getPicture(pictures) {
+    const index = pictures.length - 1;
+    return pictures[index];
   }
   getProduct(data, description) {
+    const picture = !!data ? this.getPicture(data.pictures) : "";
     const product = {
       author: {
         name: "",
@@ -56,10 +59,10 @@ class ProductController {
       title: data.title,
       price: {
         currency: data.currency_id,
-        amount: parseFloat(data.price),
-        decimal: utils.getDecimalValue(data.price)
+        amount: !!data ? parseFloat(data.price) : null,
+        decimal: !!data ? utils.getDecimalValue(data.price) : null
       },
-      picture: this.getPicture(data.pictures, "840"),
+      picture: picture.url,
       condition: data.condition,
       free_shipping: data.shipping.free_shipping,
       sold_quantity: data.sold_quantity,

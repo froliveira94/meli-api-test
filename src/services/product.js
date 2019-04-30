@@ -1,50 +1,38 @@
 const axios = require("axios");
 
-const options = {
-  baseURL: "http://api.mercadolibre.com/sites/MLA",
-  headers: {
-    "Content-Type": "application/json"
-  }
-};
-
 class ProductService {
-  get(req) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const request = axios.create(options);
-        const query = req.query.q;
-        const products = await request.get(`/search?q=${query}&limit=4`);
-        resolve(products);
-      } catch (err) {
-        reject({ error: err });
-      }
-    });
+  async get(req) {
+    try {
+      const query = req.query.q;
+      const products = await axios.get(
+        `http://api.mercadolibre.com/sites/MLA/search?q=${query}&limit=4`
+      );
+      return products;
+    } catch (err) {
+      return { error: err };
+    }
   }
-  getById(req) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        options.baseURL = "https://api.mercadolibre.com/items/";
-        const request = axios.create(options);
-        const id = req.params.id;
-        const product = await request.get(`${id}`);
-        resolve(product);
-      } catch (err) {
-        reject({ error: err });
-      }
-    });
+
+  async getById(req) {
+    try {
+      const id = req.params.id;
+      const product = axios.get(`https://api.mercadolibre.com/items/${id}`);
+      return product;
+    } catch (err) {
+      return { error: err };
+    }
   }
-  getDescription(req) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        options.baseURL = "https://api.mercadolibre.com/items/";
-        const request = axios.create(options);
-        const id = req.params.id;
-        const description = await request.get(`${id}/description`);
-        resolve(description);
-      } catch (err) {
-        reject({ error: err });
-      }
-    });
+
+  async getDescription(req) {
+    try {
+      const id = req.params.id;
+      const description = await axios.get(
+        `https://api.mercadolibre.com/items/${id}/description`
+      );
+      return description;
+    } catch (err) {
+      return { error: err };
+    }
   }
 }
 
